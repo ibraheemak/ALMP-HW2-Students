@@ -29,7 +29,6 @@ def run_2d():
 def run_prm():
     conf1 = np.array([0.78, -0.78, 0.0, 0.0])
     conf2 = np.array([0.8, -0.8, 0.8, 0.5])
-    #conf2 = np.array([0.8, 0.8, 0.3, 0.5])
 
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
     bb = BuildingBlocks2D(planning_env)
@@ -80,7 +79,7 @@ def run_3d():
     visualizer.show_conf(conf1)
 
 if __name__ == "__main__":
-    run_2d()
-    # run_prm()
+    # run_2d()
+    run_prm()
     # run_3d()
     # generate_graph()
