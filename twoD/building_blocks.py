@@ -23,7 +23,7 @@ class BuildingBlocks2D(object):
         @param next_config Next configuration.
         '''
         # TODO: HW2 4.2.1
-        raise NotImplementedError()
+        return np.linalg.norm(prev_config - next_config)
 
     def compute_path_cost(self, path):
         totat_cost = 0
@@ -37,7 +37,18 @@ class BuildingBlocks2D(object):
         @param given_config Given configuration.
         '''
         # TODO: HW2 4.2.2
-        raise NotImplementedError()
+        cumulative_angle = 0.0
+        x, y = 0.0, 0.0
+        positions = []
+
+        for i in range(4):
+            cumulative_angle += given_config[i]
+            x += self.links[i] * np.cos(cumulative_angle)
+            y += self.links[i] * np.sin(cumulative_angle)
+
+            positions.append([x, y])
+
+        return np.array(positions)
 
     def compute_ee_angle(self, given_config):
         '''
@@ -69,7 +80,46 @@ class BuildingBlocks2D(object):
         @param robot_positions Given links positions.
         '''
         # TODO: HW2 4.2.3
-        raise NotImplementedError()
+
+        origin = np.array([0.0, 0.0])
+
+        # Detect if origin is included
+        has_origin = np.any(np.all(robot_positions == origin, axis=1))
+
+        # Add it if missing
+        if not has_origin:
+            robot_positions = np.vstack([origin, robot_positions])
+
+        # Build list of links:
+        links = []
+        for i in range(4):
+            links.append(LineString([tuple(robot_positions[i]), tuple(robot_positions[i + 1])]))
+
+        for i in range(4):
+            for j in range(i + 1, 4):
+
+                seg1 = links[i]
+                seg2 = links[j]
+                inter = seg1.intersection(seg2)
+
+                if inter.is_empty:
+                    continue  # no collision
+
+                # Adjacent pairs (share exactly one point)
+                if abs(i - j) == 1:
+                    # Shared joint is Pi+1 for (i,i+1)
+                    shared = Point(tuple(robot_positions[max(i, j)]))
+
+                    # Allowed ONLY if intersection is exactly the shared point
+                    if inter.equals(shared):
+                        continue
+
+                    return False
+
+                # Non-adjacent links must never intersect
+                return False
+
+        return True
 
     def config_validity_checker(self, config):
         '''
