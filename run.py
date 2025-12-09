@@ -72,9 +72,21 @@ def run_prm():
     visualizer = Visualizer(bb)
     prm = PRMController(conf1, conf2, bb)
 
-    plan = [] # TODO: HW2 4.3.5
+    plan = prm.run_PRM(num_coords=500, k=10) # TODO: HW2 4.3.5
+    if plan is None:
+        print("No path found.")
+        return
+    
     print(bb.compute_path_cost(plan))
+    xy_path = np.array([
+        bb.compute_forward_kinematics(q)[-1]
+        for q in plan
+    ])
+
+    # Visualize static map
+    visualizer.visualize_map(config=conf1, plan=xy_path)
     visualizer.visualize_plan_as_gif(plan)
+    
 
 
 def generate_graph():
@@ -116,8 +128,8 @@ def run_3d():
     visualizer.show_conf(conf1)
 
 if __name__ == "__main__":
-    test_building_blocks()
-    # run_2d()
-    #run_prm()
+    #test_building_blocks()
+    run_2d()
+    run_prm()
     # run_3d()
     # generate_graph()

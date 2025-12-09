@@ -103,16 +103,16 @@ class BuildingBlocks2D(object):
                 inter = seg1.intersection(seg2)
 
                 if inter.is_empty:
-                    print("i=", i, "j=", j, "no intersection")
-                    print("-------------------")
+                  #  print("i=", i, "j=", j, "no intersection")
+                  #  print("-------------------")
                     continue  # no collision
 
                 # Adjacent pairs (share exactly one point)
                 if abs(i - j) == 1:
                     # Shared joint is Pi+1 for (i,i+1)
                     shared = Point(tuple(robot_positions[max(i, j)]))
-                    print("i=", i, "j=", j)
-                    print("inter=", inter, "shared=", shared)
+                 #   print("i=", i, "j=", j)
+                 #   print("inter=", inter, "shared=", shared)
 
                     # Allowed ONLY if intersection is exactly the shared point
                     if inter.equals(shared):
