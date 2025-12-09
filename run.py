@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import matplotlib.pyplot as plt
 from twoD.environment import MapEnvironment
 from twoD.building_blocks import BuildingBlocks2D
 from twoD.prm import PRMController
@@ -87,15 +88,48 @@ def run_prm():
     visualizer.visualize_map(config=conf1, plan=xy_path)
     visualizer.visualize_plan_as_gif(plan)
     
+def plot_P1(prm):
+    results = prm.create_graph(100, 100, 7)
+
+    plt.figure(figsize=(10,6))
+    for key in results:
+        ns = [item[0] for item in results[key]]
+        costs = [item[2] for item in results[key]]
+        plt.plot(ns, costs, marker='o', label=key)
+
+    plt.title("P1: Path Cost vs n")
+    plt.xlabel("Number of Milestones n")
+    plt.ylabel("Path Cost")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+
+def plot_P2(prm): #Path Cost vs Runtime
+    results = prm.create_graph(100, 100, 7)
+
+    plt.figure(figsize=(10,6))
+    for key in results:
+        runtimes = [item[1] for item in results[key]]
+        costs = [item[2] for item in results[key]]
+        plt.plot(runtimes, costs, marker='o', label=key)
+
+    plt.title("P2: Path Cost vs Runtime")
+    plt.xlabel("Runtime (seconds)")
+    plt.ylabel("Path Cost")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
 
 
 def generate_graph():
     conf1 = np.array([0.78, -0.78, 0.0, 0.0])
-    conf2 = np.array([0.8, 0.8, 0.3, 0.5])
+    conf2 = np.array([0.8, -0.8, 0.8, 0.5])
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
     bb = BuildingBlocks2D(planning_env)
     prm = PRMController(conf1, conf2, bb)
-    prm.create_graph()
+    plot_P1(prm)
 
 
 
@@ -129,7 +163,7 @@ def run_3d():
 
 if __name__ == "__main__":
     #test_building_blocks()
-    run_2d()
-    run_prm()
+    #run_2d()
+    #run_prm()
     # run_3d()
-    # generate_graph()
+    generate_graph()

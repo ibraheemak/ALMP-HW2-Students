@@ -54,8 +54,62 @@ class PRMController:
         return config_path
     
     def create_graph(self, base_number, how_many_to_add, num_searches):
-        # TODO: HW2 4.3.5
-        raise NotImplementedError()
+        """
+        Creates all 5 PRM curves (for k = 5, 10, log(n), 10log(n), n/10)
+        Returns a dictionary mapping each k-type to a list of (n, runtime, cost).
+        """
+
+        results = {
+            "k=5": [],
+            "k=10": [],
+            "k=log(n)": [],
+            "k=10log(n)": [],
+            "k=n/10": []
+        }
+
+        # Generate ALL samples ONCE
+        total_needed = base_number + how_many_to_add * (num_searches - 1)
+        all_samples = self.gen_coords(total_needed)
+
+        for i in range(num_searches):
+            n = base_number + i * how_many_to_add      # 100, 200, ..., 700
+            milestones = all_samples[:n]              
+
+            # build config array
+            configs = np.vstack([milestones, self.start, self.goal])
+
+        
+            k_values = {
+                "k=5": 5,
+                "k=10": 10,
+                "k=log(n)": max(1, int(np.log(n))),
+                "k=10log(n)": max(1, int(10*np.log(n))),
+                "k=n/10": max(1, int(n/10))
+            }
+
+            for key, k in k_values.items():
+
+                # reset graph
+                self.graph = nx.Graph()
+                self.configs = []
+
+                # build roadmap
+                t0 = time.time()
+                self.add_to_graph(configs, k)
+                path = self.shortest_path()
+                runtime = time.time() - t0
+
+                if path is None:
+                    cost = float('inf')
+                else:
+                    cost = self.bb.compute_path_cost(path)
+
+                results[key].append((n, runtime, cost))
+
+        return results
+
+
+
 
     def gen_coords(self, n=5):
         """
