@@ -72,6 +72,8 @@ class PRMController:
         all_samples = self.gen_coords(total_needed)
 
         for i in range(num_searches):
+            print("iteration", i)
+            print("Creating graph for n =", base_number + i * how_many_to_add)
             n = base_number + i * how_many_to_add      # 100, 200, ..., 700
             milestones = all_samples[:n]              
 
