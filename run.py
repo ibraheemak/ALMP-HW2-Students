@@ -1,5 +1,5 @@
 import math
-
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from twoD.environment import MapEnvironment
@@ -88,30 +88,67 @@ def run_prm():
     visualizer.visualize_map(config=conf1, plan=xy_path)
     visualizer.visualize_plan_as_gif(plan)
     
-def plot_P1(prm):
-    results = prm.create_graph(100, 100, 7)
+def plot_P1_and_P2(prm):
+    """
+    Calls create_graph() ONCE.
+    Produces both plots and exports two CSV files:
+    P1_results.csv and P2_results.csv.
+    """
 
+    print("Running PRM graph generation... This may take a moment.")
+    results = prm.create_graph(base_number=100, how_many_to_add=100, num_searches=7)
+    print("Finished generating PRM results.")
+
+    # ===============================================
+    # EXPORT CSV FOR P1: Path Cost vs n
+    # ===============================================
+    with open("P1_results.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["k-type", "n", "path_cost"])
+
+        for key, values in results.items():
+            for (n, runtime, cost) in values:
+                writer.writerow([key, n, cost])
+
+    print("Saved P1_results.csv")
+
+    # ===============================================
+    # EXPORT CSV FOR P2: Path Cost vs Runtime
+    # ===============================================
+    with open("P2_results.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["k-type", "runtime_sec", "path_cost"])
+
+        for key, values in results.items():
+            for (n, runtime, cost) in values:
+                writer.writerow([key, runtime, cost])
+
+    print("Saved P2_results.csv")
+
+    # ===============================================
+    # P1 PLOT: Path Cost vs n
+    # ===============================================
     plt.figure(figsize=(10,6))
-    for key in results:
-        ns = [item[0] for item in results[key]]
-        costs = [item[2] for item in results[key]]
+    for key, values in results.items():
+        ns    = [item[0] for item in values]
+        costs = [item[2] for item in values]
         plt.plot(ns, costs, marker='o', label=key)
 
     plt.title("P1: Path Cost vs n")
-    plt.xlabel("Number of Milestones n")
+    plt.xlabel("Number of Milestones (n)")
     plt.ylabel("Path Cost")
     plt.grid(True)
     plt.legend()
+    plt.tight_layout()
     plt.show()
 
-
-def plot_P2(prm): #Path Cost vs Runtime
-    results = prm.create_graph(100, 100, 7)
-
+    # ===============================================
+    # P2 PLOT: Path Cost vs Runtime
+    # ===============================================
     plt.figure(figsize=(10,6))
-    for key in results:
-        runtimes = [item[1] for item in results[key]]
-        costs = [item[2] for item in results[key]]
+    for key, values in results.items():
+        runtimes = [item[1] for item in values]
+        costs    = [item[2] for item in values]
         plt.plot(runtimes, costs, marker='o', label=key)
 
     plt.title("P2: Path Cost vs Runtime")
@@ -119,8 +156,10 @@ def plot_P2(prm): #Path Cost vs Runtime
     plt.ylabel("Path Cost")
     plt.grid(True)
     plt.legend()
+    plt.tight_layout()
     plt.show()
 
+    return results
 
 
 def generate_graph():
@@ -129,7 +168,7 @@ def generate_graph():
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
     bb = BuildingBlocks2D(planning_env)
     prm = PRMController(conf1, conf2, bb)
-    plot_P1(prm)
+    plot_P1_and_P2(prm)
 
 
 
