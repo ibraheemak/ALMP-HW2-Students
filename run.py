@@ -1,6 +1,8 @@
 import math
 import csv
 import numpy as np
+import matplotlib
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 from twoD.environment import MapEnvironment
 from twoD.building_blocks import BuildingBlocks2D
@@ -186,9 +188,11 @@ def run_3d():
     visualizer = Visualize_UR(ur_params, env=env, transform=transform, bb=bb)
 
     # --------- configurations-------------
-    conf1 = np.deg2rad([0, -90, 0, -90, 0, 0])
+    # conf1 = np.deg2rad([0, -90, 0, -90, 0, 0])
+    conf1 = np.deg2rad([80, -72, 101, -120, -90, -10])
 
-    conf2 = np.array([-0.694, -1.376, -2.212, -1.122, 1.570, -2.26])
+    # conf2 = np.array([-0.694, -1.376, -2.212, -1.122, 1.570, -2.26])
+    conf2 = np.deg2rad([20, -90, 90, -90, -90, -10])
 
     # ---------------------------------------
 
@@ -197,12 +201,15 @@ def run_3d():
     print("Configuration 1 is free collision:", res)
     res = bb.edge_validity_checker(prev_conf=conf1 ,current_conf=conf2)
     print("Edge between conf 1 and conf 2 is free collision:", res)
+    res = bb.config_validity_checker(conf=conf2)
+    print("Configuration 2 is free collision:", res)
 
     visualizer.show_conf(conf1)
+    # visualizer.show_conf(conf2)
 
 if __name__ == "__main__":
     #test_building_blocks()
     #run_2d()
     #run_prm()
-    # run_3d()
-    generate_graph()
+    run_3d()
+    # generate_graph()
